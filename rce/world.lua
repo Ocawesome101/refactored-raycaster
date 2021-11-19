@@ -6,13 +6,15 @@ local resolve = require("rce.resolver")
 local textures = require("rce.texture")
 local lib = {}
 
-function lib.loadworld(file)
-  expect(1, file, "string")
-  local w = {map = {}, doors = {}, sprites = {}}
+function lib.load(state, file)
+  expect(1, state, "table")
+  expect(2, file, "string")
+  local w = {world = {}, doors = {}, sprites = {}}
 
   local handle = assert(io.open(resolve(file), "rb"))
   local mapWidth, mapHeight = ("<I2I2"):unpack(handle:read(4))
   local data = handle:read("a")
+  handle:close()
 
   repeat
     local texID = ("<s1"):unpack(data)
@@ -65,6 +67,8 @@ function lib.loadworld(file)
       w.world[mapY][mapX] = tile
     end
   end
+
+  state.world = w
 end
 
 function lib.gettile(w, x, y)

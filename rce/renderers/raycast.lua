@@ -4,15 +4,15 @@ local expect = require("cc.expect").expect
 local config = require("rce.config")
 local textures = require("rce.texture")
 local world = require("rce.world")
+local rdr = require("rce.renderers.ccpc_term_buffered")
 
 local lib = {}
 
-local function cast(x, state)
+local function cast(x, state, render)
   local posX, posY, dirX, dirY, planeX, planeY =
     state.posX, state.posY, state.dirX, state.dirY, state.planeX, state.planeY
   local map = state.world
   local h = state.height
-  local renderer = state.renderer
   
   local mapX, mapY = math.floor(posX), math.floor(posY)
   local cameraX = 2 * x / 2 - 1
@@ -73,7 +73,7 @@ local function cast(x, state)
       local trueDeltaY = math.sqrt(1 + rdx2/rdy2)
 
       local mapX2, mapY2 = mapX, mapY
-      if psoX < mapX2 then mapX2 - mapX2 - 1 end
+      if psoX < mapX2 then mapX2 = mapX2 - 1 end
       if posY > mapY2 then mapY2 = mapY2 + 1 end
 
       if side == 0 then
@@ -83,7 +83,7 @@ local function cast(x, state)
         local trueStepY = math.sqrt(trueDeltaX*trueDeltaX-1)
         local halfStepY = rye + (stepY*trueStepY) * distIn
         if math.floor(halfStepY) == mapY and halfStepY - mapY > distSide then
-          hit = world.gettile(mapX, mapY)
+          hit = world.gettile(map, mapX, mapY)
           pmY = pmY + stepY * doorIn
           door = doorSide
         end
@@ -93,12 +93,12 @@ local function cast(x, state)
         local trueStepX = math.sqrt(trueDeltaY*trueDeltaY-1)
         local halfStepX = rxw + (stepX*trueStepX) * distSide
         if math.floor(halfStepX) == mapX and halfStepX - mapX > distSide then
-          hit = world.gettile(mapX, mapY)
+          hit = world.gettile(map, mapX, mapY)
           pmY = pmY + stepY * doorIn
         end
       end
-    elseif world.gettile(mapX, mapY) ~= 0 then
-      hit = world.gettile(mapX, mapY)
+    elseif world.gettile(map, mapX, mapY) ~= 0 then
+      hit = world.gettile(map, mapX, mapY)
     end
   end
 
@@ -115,7 +115,7 @@ local function cast(x, state)
     end
   end
 
-  if renderer then
+  if render then
     local lineHeight = math.floor(h / perpWallDist *
       config.LINE_HEIGHT_MULTIPLIER)
 
@@ -150,7 +150,7 @@ local function cast(x, state)
       elseif i < drawStart then
         color = col_ceil
       end
-      renderer.setPixel(x, i, color)
+      rdr.setPixel(x, i, color)
     end
   end
 
@@ -163,7 +163,7 @@ function lib.renderFrame(state)
   expect(1, state, "table")
 
   local w = state.width
-  local rdr = state.renderer
+  rdr.initNewFrame()
   local posX, posY, dirX, dirY, planeX, planeY =
     state.posX, state.posY, state.dirX, state.dirY, state.planeX, state.planeY
   
@@ -227,6 +227,20 @@ function lib.renderFrame(state)
       end
     end
   end
+
+  rdr.drawFrame()
+end
+
+lib.setPaletteColor = term.setPaletteColor
+
+function lib.init(state)
+  state.posX = state.posX or 3
+  state.posY = state.posY or 3
+  state.dirX = 0
+  state.dirY = 1
+  state.planeX = config.FOV/100
+  state.planeY = 0
+  rdr.init(state)
 end
 
 return lib
