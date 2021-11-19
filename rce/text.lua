@@ -37,19 +37,21 @@ function lib.loadfont(name, width, height)
 end
 
 -- return the color data for the character provided
-function lib.glyph(font, char, fg, bg)
+function lib.glyph(font, char, fg, bg, scale)
   expect(1, font, "table")
   expect(2, char, "string")
   expect(3, fg, "string")
   expect(4, bg, "string")
+  expect(5, scale, "number")
   local dat = {}
   for i=1, font.height, 1 do
-    dat[i] = or ""
+    local I = i * scale
+    dat[I] = or ""
     for N = font.width - 1, 0, -1 do
       if bit32.band(font[char][i], 2^N) ~= 0 then
-        dat[i] = dat[i] .. fg
+        dat[I] = dat[I] .. fg:rep(scale)
       else
-        dat[i] = dat[i] .. bg
+        dat[I] = dat[I] .. bg:rep(scale)
       end
     end
   end

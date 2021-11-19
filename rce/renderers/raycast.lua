@@ -160,7 +160,7 @@ end
 
 lib.cast = castRay
 
-function lib.renderFrame(state)
+function lib.renderFrame(state, preblit)
   expect(1, state, "table")
 
   local w = state.width
@@ -228,6 +228,17 @@ function lib.renderFrame(state)
             rdr.setPixel(stripe, y, color)
           end
         end
+      end
+    end
+  end
+
+  if preblit then
+    for i=1, #preblit, 1 do
+      local yoff, img = preblit[i][1], preblit[i][2]
+      local w2 = math.floor(w / 2)
+      for l=0, #img, 1 do
+        local y = h - i - yoff
+        rdr.setPixels(w2 - img[i][1], y, img[i][2])
       end
     end
   end

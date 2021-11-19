@@ -4,7 +4,7 @@ local config = require("rce.config")
 
 local drawbuf = {}
 local w, h = term.getSize(2)
-h = h - config.HUD_HEIGHT
+h = h - config.HUD_HEIGHT * config.HUD_SCALE
 
 local lib = {}
 
@@ -15,6 +15,10 @@ function lib.setPixel(x, y, color)
   else
     drawbuf[y] = drawbuf[y]:sub(0,x) .. color .. drawbuf[y]:sub(x+2)
   end
+end
+
+function lib.setPixels(x, y, pix)
+  drawbuf[y] = drawbuf[y]:sub(0,x) .. pix .. drawbuf[y]:sub(x+#pix+1)
 end
 
 -- modes:

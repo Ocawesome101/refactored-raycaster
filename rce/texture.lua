@@ -88,6 +88,13 @@ function lib.getdata(id)
   return textures[id] and textures[id].data
 end
 
+function lib.getid(name)
+  expect(1, name, "string")
+  for k,v in ipairs(textures) do
+    if v.name == name then return k end
+  end
+end
+
 -- convert to a format directly drawable on screen
 function lib.todrawable(id, scale)
   expect(1, id, "number")
