@@ -34,13 +34,21 @@ function lib.isinpalette(rgb)
 end
 
 local lastSetColor = 0
+function lib.addtopalette(rgb)
+  local idx = lib.isinpalette(rgb)
+  if idx then return idx end
+  term.setPaletteColor(lastSetColor, rgb)
+  palette[lastSetColor] = rgb
+  lastSetColor = lastSetColor + 1
+  return lastSetColor
+end
+
 function lib.load(id, name)
   expect(1, id, "number")
   expect(2, name, "string")
   local t = {name = name, data = {}}
   textures[id] = t
   local handle = assert(io.open(resolve("textures/"..name..".tex"), "rb"))
-  local n = 0
 
   -- set up palette color conversion
   local palConv = {}
@@ -51,13 +59,12 @@ function lib.load(id, name)
     local inpalette = lib.isinpalette(rgb)
     if not inpalette then
       assert(lastSetColor < 256, "too many texture colors (max 255)")
-      term.setPaletteColor(lastSetColor, rgb)
-      palette[lastSetColor] = rgb
-      lastSetColor = lastSetColor + 1
+      lib.addtopalette(rgb)
     end
     palConv[colorID] = inpalette or lastSetColor
   end
 
+  local n = 0
   -- read texture data
   repeat
     local byte = handle:read(1)

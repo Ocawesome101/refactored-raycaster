@@ -10,11 +10,16 @@ local lib = {}
 
 function lib.setPixel(x, y, color)
   color = string.char(color)
+  if #drawbuf[y] < w then
+    drawbuf[y] = drawbuf[y] .. color
+  else
+    drawbuf[y] = drawbuf[y]:sub(0,x) .. color .. drawbuf[y]:sub(x+2)
+  end
 end
 
 -- modes:
 --  1: drawbuf is literally empty
---  2: drawbuf is full of NULLs (slower)
+--  2: drawbuf is full of NULLs (slower to use)
 function lib.initNewFrame(mode)
   if mode == 1 then
     for i=0, h - 1, 1 do
@@ -36,7 +41,7 @@ end
 function lib.init(state)
   state.width = w
   state.height = h
-  term.setGraphicsMode(true)
+  term.setGraphicsMode(2)
 end
 
 return lib

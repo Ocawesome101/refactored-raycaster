@@ -15,4 +15,8 @@ function lib.newstate()
   return state
 end
 
+function lib.render(state)
+  lib.renderer.renderFrame(state)
+end
+
 return lib

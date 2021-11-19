@@ -10,12 +10,14 @@ function lib.tick(i)
   end
 
   local sig, code, rep = os.pullEventRaw()
-  if sig == "timer" and code == lastTimerID then
+  if sig == "terminate" then
+    return true
+  elseif sig == "timer" and code == lastTimerID then
     lastTimerID = nil
   elseif sig == "key" and not rep then
-    pressed[code] = true
+    i.pressed[code] = true
   elseif sig == "key_up" then
-    pressed[code] = false
+    i.pressed[code] = false
   end
 end
 

@@ -10,7 +10,7 @@ function lib.useinputs(name)
 end
 
 function lib.tick()
-  lib.inputscheme.tick(lib)
+  return lib.inputscheme.tick(lib)
 end
 
 return lib

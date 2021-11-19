@@ -66,6 +66,8 @@ function lib.load(state, file)
     else
       w.world[mapY][mapX] = tile
     end
+    
+    mapX = mapX + 1
   end
 
   state.world = w

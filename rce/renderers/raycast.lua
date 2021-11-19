@@ -8,6 +8,9 @@ local rdr = require("rce.renderers.ccpc_term_buffered")
 
 local lib = {}
 
+local col_ceil
+local col_floor
+    
 local function cast(x, state, render)
   local posX, posY, dirX, dirY, planeX, planeY =
     state.posX, state.posY, state.dirX, state.dirY, state.planeX, state.planeY
@@ -60,6 +63,7 @@ local function cast(x, state, render)
 
     pmX, pmY = mapX, mapY
     if not world.gettile(map, mapX, mapY) then
+      print("left map at", mapX, mapY)
       hit = 0
     elseif world.isdoor(map, mapX, mapY) then
       local doorState = world.doorstate(map, mapX, mapY)
@@ -138,15 +142,12 @@ local function cast(x, state, render)
     local step = config.TEXTURE_HEIGHT / lineHeight
     local texPos = (drawStart - h / 2 + lineHeight / 2) * step
 
-    local col_ceil = textures.isinpalette(0x383838)
-    local col_floor = textures.isinpalette(0x707070)
-    
-    for i=0, h, 1 do
+    for i=0, h - 1, 1 do
       local color = col_floor
       if (i >= drawStart and i < drawEnd) then
         local texY = bit32.band(math.floor(texPos), config.TEXTURE_HEIGHT - 1)
-        texPos = texPos + step
         color = tex[config.TEXTURE_HEIGHT * texY + texX] or 255
+        texPos = texPos + step
       elseif i < drawStart then
         color = col_ceil
       end
@@ -163,13 +164,15 @@ function lib.renderFrame(state)
   expect(1, state, "table")
 
   local w = state.width
-  rdr.initNewFrame()
+  local h = state.height
+  local sprites = state.world.sprites
+  rdr.initNewFrame(1)
   local posX, posY, dirX, dirY, planeX, planeY =
     state.posX, state.posY, state.dirX, state.dirY, state.planeX, state.planeY
   
   local zBuffer = {}
   for x = 0, w - 1, 1 do
-    zBuffer[x] = cast(x, state)
+    zBuffer[x] = cast(x, state, true)
   end
 
   -- sprite rendering
@@ -194,12 +197,13 @@ function lib.renderFrame(state)
     local invDet = 1 / (planeX * dirY - dirX * planeY)
 
     local transformX = invDet * (dirY * spriteX - dirX * spriteY)
-    local transformX = invDet * (-planeY * spriteX - planeX * spriteY)
+    local transformY = invDet * (-planeY * spriteX - planeX * spriteY)
 
     local spriteScreenX = math.floor((w / 2) * (1 + transformX / transformY))
 
     local spriteHeight = math.abs(math.floor(h / transformY
       * config.LINE_HEIGHT_MULTIPLIER))
+    local spriteWidth = spriteHeight
 
     local drawStartY = math.max(0, -spriteHeight / 2 + h / 2)
     local drawEndY = math.min(h - 1, spriteHeight / 2 + h / 2)
@@ -241,6 +245,8 @@ function lib.init(state)
   state.planeX = config.FOV/100
   state.planeY = 0
   rdr.init(state)
+  col_ceil = textures.addtopalette(0x383838)
+  col_floor = textures.addtopalette(0x707070)
 end
 
 return lib
