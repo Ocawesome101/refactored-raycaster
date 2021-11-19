@@ -7,6 +7,7 @@ lib.keys = {}
 
 function lib.useinputs(name)
   lib.inputscheme = require("rce.inputschemes."..name)
+  lib.keys = lib.inputscheme.keys
 end
 
 function lib.tick()

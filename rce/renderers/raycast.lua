@@ -15,17 +15,18 @@ local function cast(x, state, render)
   local posX, posY, dirX, dirY, planeX, planeY =
     state.posX, state.posY, state.dirX, state.dirY, state.planeX, state.planeY
   local map = state.world
+  local w = state.height
   local h = state.height
   
   local mapX, mapY = math.floor(posX), math.floor(posY)
-  local cameraX = 2 * x / 2 - 1
+  local cameraX = 2 * x / w - 1
   local rayDirX = dirX + planeX * cameraX
   local rayDirY = dirY + planeY * cameraX
 
   local sideDistX, sideDistY
 
-  local deltaDistX = (rayDirX == 0) and 1e20 or math.abs(1 / rayDirX)
-  local deltaDistY = (rayDirY == 0) and 1e20 or math.abs(1 / rayDirY)
+  local deltaDistX = (rayDirX == 0) and 1e30 or math.abs(1 / rayDirX)
+  local deltaDistY = (rayDirY == 0) and 1e30 or math.abs(1 / rayDirY)
   local perpWallDist
 
   local stepX, stepY
@@ -77,7 +78,7 @@ local function cast(x, state, render)
       local trueDeltaY = math.sqrt(1 + rdx2/rdy2)
 
       local mapX2, mapY2 = mapX, mapY
-      if psoX < mapX2 then mapX2 = mapX2 - 1 end
+      if posX < mapX2 then mapX2 = mapX2 - 1 end
       if posY > mapY2 then mapY2 = mapY2 + 1 end
 
       if side == 0 then
@@ -88,17 +89,17 @@ local function cast(x, state, render)
         local halfStepY = rye + (stepY*trueStepY) * distIn
         if math.floor(halfStepY) == mapY and halfStepY - mapY > distSide then
           hit = world.gettile(map, mapX, mapY)
-          pmY = pmY + stepY * doorIn
+          pmY = pmY + stepY * distIn
           door = doorSide
         end
       else
         local rayMult = (mapY2 - posY) / rayDirY
         local rxe = posX + rayDirX * rayMult
         local trueStepX = math.sqrt(trueDeltaY*trueDeltaY-1)
-        local halfStepX = rxw + (stepX*trueStepX) * distSide
+        local halfStepX = rxe + (stepX*trueStepX) * distSide
         if math.floor(halfStepX) == mapX and halfStepX - mapX > distSide then
           hit = world.gettile(map, mapX, mapY)
-          pmY = pmY + stepY * doorIn
+          pmY = pmY + stepY * distIn
         end
       end
     elseif world.gettile(map, mapX, mapY) ~= 0 then

@@ -1,9 +1,15 @@
 -- game logic --
 
 local rce = require("rce")
+local hud = require("rce.hud")
 local input = require("rce.input")
 local world = require("rce.world")
 local physics = require("rce.physics")
+local config = require("rce.config")
+local textures = require("rce.texture")
+
+local playerHealth = 100
+local weapon = "pistol"
 
 local worlds = {
   {text = "Map 01: Awakening", map = "maps/map1.map"},
@@ -11,7 +17,43 @@ local worlds = {
   {text = "Map 03: Slaughter", map = "maps/map03.map"}
 }
 
+local weapons = {
+  "pistol",
+  pistol = {
+    obtained = true,
+    maxDamage = 20,
+    shotInterval = 750,
+    ammo = "basic",
+    projectile = "hitscan"
+  },
+  "minigun",
+  minigun = {
+    obtained = false,
+    maxDamage = 5,
+    shotInterval = 50,
+    ammo = "basic",
+    projectile = "hitscan"
+  },
+  "rocket",
+  rocket = {
+    obtained = false,
+    maxDamage = 120,
+    shotInterval = 2000,
+    ammo = "rocket",
+    projectile = "fireball"
+  }
+}
+
+local ammo = {
+  basic = 128,
+  rocket = 0
+}
+
+local items = {
+}
+
 rce.userenderer("raycast")
+rce.useHUDrenderer("ccpc_term_buffered")
 rce.useinputscheme("cc")
 local state = rce.newstate()
 
@@ -22,15 +64,19 @@ textures.load(515, "minigun02")
 textures.load(516, "rocket")
 textures.load(517, "gunfire")
 
+hud.addElement(2, 2, "HEALTH: " .. playerHealth, 1)
+hud.addElement(2, 8, "WEAPON: " .. weapon:upper(), 1)
+hud.addElement(128, 2, "AMMO: " .. ammo[weapons[weapon].ammo], 1)
+
 local drawables = {
-  gunfire = textures.todrawable(517, 2)
+  gunfire = textures.todrawable(517, config.HUD_SCALE),
   minigun = {
-    textures.todrawable(514, 2),
-    textures.todrawable(515, 2),
+    textures.todrawable(514, config.HUD_SCALE),
+    textures.todrawable(515, config.HUD_SCALE),
   },
-  rocket = textures.todrawable(516, 2),
-  -- TODO: unique pistol graphic
-  pistol = textures.todrawable(516)
+  rocket = textures.todrawable(516, config.HUD_SCALE),
+  -- TODO: unique pistol graphic, not just downscaled rocket
+  pistol = textures.todrawable(516, math.floor(config.HUD_SCALE / 2))
 }
 
 world.load(state, "maps/map01.map")
@@ -45,10 +91,22 @@ end
 
 local lastShot, nextShot = 0, 0
 while true do
+  local time = os.epoch("utc")
   local preblit, gun = {}
-  if os.epoch("utc") - lastShot <= 100 then
-    preblit[1] = gunfire
+  if time - lastShot <= 100 then
+    preblit[1] = {weapon == "pistol" and 0 or (8*config.HUD_SCALE),
+      drawables.gunfire}
   end
+  if weapon == "pistol" then gun = drawables.pistol
+  elseif weapon == "minigun" then
+    local idx
+    if nextShot > time then
+      idx = time % 100 >= 50 and 1 or 2
+    else
+      idx = 1
+    end
+    gun = drawables.minigun[idx]
+  elseif weapon == "rocket" then gun = drawables.rocket end
   if gun then
     preblit[#preblit+1] = {0,gun}
   end
@@ -56,6 +114,45 @@ while true do
   local exit = input.tick()
   if exit then break end
 
+  if input.pressed[input.keys.one] then
+    if weapons[weapons[1]].collected then
+      weapon = weapons[weapons[1]]
+      hud.updateElement(hudweapon, weapon)
+    end
+  elseif input.pressed[input.keys.two] then
+    if weapons[weapons[2]].collected then
+      weapon = weapons[weapons[2]]
+      hud.updateElement(hudweapon, weapon)
+    end
+  elseif input.pressed[input.keys.three] then
+    if weapons[weapons[3]].collected then
+      weapon = weapons[weapons[3]]
+      hud.updateElement(hudweapon, weapon)
+    end
+  end
+
+  local moveSpeed, rotSpeed = frametime * 0.007, frametime * 0.003
+  if (input.pressed[input.keys.w] or input.pressed[input.keys.s]) and
+     (input.pressed[input.keys.a] or input.pressed[input.keys.d]) then
+    moveSpeed = moveSpeed * 0.8
+  end
+
   if input.pressed[input.keys.w] then
+    rce.movePlayer(state, rce.PLAYER_FORWARD, moveSpeed)
+  end
+  if input.pressed[input.keys.s] then
+    rce.movePlayer(state, rce.PLAYER_BACKWARD, moveSpeed)
+  end
+  if input.pressed[input.keys.a] then
+    rce.movePlayer(state, rce.PLAYER_LEFT, moveSpeed)
+  end
+  if input.pressed[input.keys.d] then
+    rce.movePlayer(state, rce.PLAYER_RIGHT, moveSpeed)
+  end
+  if input.pressed[input.keys.left] then
+    rce.turnPlayer(state, rce.TURN_LEFT, rotSpeed)
+  end
+  if input.pressed[input.keys.right] then
+    rce.turnPlayer(state, rce.TURN_RIGHT, rotSpeed)
   end
 end

@@ -1,10 +1,9 @@
 -- ComputerCraft input scheme --
 
-local lib = {}
+local lib = {keys=keys}
 
 local lastTimerID
 function lib.tick(i)
-  i.keys = i.keys or keys
   if not lastTimerID then
     lastTimerID = os.startTimer(0)
   end

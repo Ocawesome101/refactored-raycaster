@@ -2,6 +2,7 @@
 
 local lib = {}
 
+local expect = require("cc.expect").expect
 local resolve = require("rce.resolver")
 local textures = require("rce.texture")
 
@@ -9,8 +10,8 @@ lib.path = "fonts/?.hex;rce/fonts/?.hex"
 
 local function search(name)
   for ent in lib.path:gmatch("[^;]+") do
-    ent = ent:gsub("%?", name)
-    if fs.exists(resolve(ent)) then
+    ent = resolve(ent:gsub("%?", name))
+    if fs.exists(ent) then
       return ent
     end
   end
@@ -44,18 +45,39 @@ function lib.glyph(font, char, fg, bg, scale)
   expect(4, bg, "string")
   expect(5, scale, "number")
   local dat = {}
-  for i=1, font.height, 1 do
-    local I = i * scale
-    dat[I] = or ""
-    for N = font.width - 1, 0, -1 do
-      if bit32.band(font[char][i], 2^N) ~= 0 then
-        dat[I] = dat[I] .. fg:rep(scale)
+  assert(font[char], "font does not have character " .. char)
+  for i, byte in ipairs(font[char]) do
+    local I = i * scale - (scale - 1)
+    for N = 7, 0, -1 do
+      if bit32.band(byte, 2^N) ~= 0 then
+        for n=0, scale-1, 1 do
+          dat[n+I] = dat[n+I] or ""
+          dat[n+I] = dat[n+I] .. fg:rep(scale)
+        end
       else
-        dat[I] = dat[I] .. bg:rep(scale)
+        for n=0, scale-1, 1 do
+          dat[n+I] = dat[n+I] or ""
+          dat[n+I] = dat[n+I] .. bg:rep(scale)
+        end
       end
     end
   end
   return dat
+end
+
+function lib.glyphs(font, str, fg, bg, scale)
+  local rest
+  for c in str:gmatch(".") do
+    if not rest then
+      rest = lib.glyph(font, c, fg, bg, scale)
+    else
+      local char = lib.glyph(font, c, fg, bg, scale)
+      for i=1, #char, 1 do
+        rest[i] = rest[i] .. char[i]
+      end
+    end
+  end
+  return rest
 end
 
 return lib
