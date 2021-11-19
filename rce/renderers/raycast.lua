@@ -89,7 +89,7 @@ local function cast(x, state, render)
         local halfStepY = rye + (stepY*trueStepY) * distIn
         if math.floor(halfStepY) == mapY and halfStepY - mapY > distSide then
           hit = world.gettile(map, mapX, mapY)
-          pmY = pmY + stepY * distIn
+          pmX = pmX + stepX * distIn
           door = distSide
         end
       else
@@ -99,7 +99,7 @@ local function cast(x, state, render)
         local halfStepX = rxe + (stepX*trueStepX) * distSide
         if math.floor(halfStepX) == mapX and halfStepX - mapX > distSide then
           hit = world.gettile(map, mapX, mapY)
-          pmX = pmX + stepX * distIn
+          pmY = pmY + stepY * distIn
           door = distSide
         end
       end
