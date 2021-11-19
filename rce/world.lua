@@ -69,16 +69,30 @@ end
 
 function lib.gettile(w, x, y)
   expect(1, w, "table")
+  expect(2, x, "number")
+  expect(3, y, "number")
   return w.world[y] and w.world[y][x]
 end
 
 function lib.isdoor(w, x, y)
   expect(1, w, "table")
+  expect(2, x, "number")
+  expect(3, y, "number")
   return not not (w.doors[y] and w.doors[y][x])
+end
+
+function lib.doorstate(w, x, y)
+  expect(1, w, "table")
+  expect(2, x, "number")
+  expect(3, y, "number")
+  if not lib.isdoor(w, x, y) then return end
+  return w.doors[y][x]
 end
 
 function lib.isdooropen(w, x, y)
   expect(1, w, "table")
+  expect(2, x, "number")
+  expect(3, y, "number")
   if not lib.isdoor(w, x, y) then return end
   return w.doors[y][x][1] >= config.DOOR_OPEN_THRESHOLD
 end
