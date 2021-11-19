@@ -90,7 +90,7 @@ local function cast(x, state, render)
         if math.floor(halfStepY) == mapY and halfStepY - mapY > distSide then
           hit = world.gettile(map, mapX, mapY)
           pmY = pmY + stepY * distIn
-          door = doorSide
+          door = distSide
         end
       else
         local rayMult = (mapY2 - posY) / rayDirY
@@ -99,7 +99,8 @@ local function cast(x, state, render)
         local halfStepX = rxe + (stepX*trueStepX) * distSide
         if math.floor(halfStepX) == mapX and halfStepX - mapX > distSide then
           hit = world.gettile(map, mapX, mapY)
-          pmY = pmY + stepY * distIn
+          pmX = pmX + stepX * distIn
+          door = distSide
         end
       end
     elseif world.gettile(map, mapX, mapY) ~= 0 then
@@ -134,7 +135,7 @@ local function cast(x, state, render)
     if side == 0 then wallX = posY + perpWallDist * rayDirY
     else wallX = posX + perpWallDist * rayDirX end
     wallX = wallX - door
-    walLX = wallX - math.floor(wallX)
+    wallX = wallX - math.floor(wallX)
 
     local texX = math.floor(wallX * config.TEXTURE_WIDTH)
     if (side == 0 and rayDirX > 0) or (side == 1 and rayDirY < 0) then
