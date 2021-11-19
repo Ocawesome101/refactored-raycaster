@@ -79,7 +79,7 @@ local drawables = {
   pistol = textures.todrawable(516, math.floor(config.HUD_SCALE / 2))
 }
 
-world.load(state, "maps/map01.map")
+world.load(state, "maps/map1.map")
 
 local function forEachSprite(func, matches)
   for i, sprite in ipairs(state.world.sprites) do
@@ -154,5 +154,7 @@ while true do
   end
   if input.pressed[input.keys.right] then
     rce.turnPlayer(state, rce.TURN_RIGHT, rotSpeed)
+  end
+  if input.pressed[input.keys.space] then
   end
 end

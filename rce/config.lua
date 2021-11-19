@@ -5,8 +5,8 @@ return {
   COLOR_MATCH_FACTOR = 16,
   -- Controls raycaster line height.  Can be useful for making things
   -- look more square.
-  -- Default: 1
-  LINE_HEIGHT_MULTIPLIER = 1,
+  -- Default: 0.8
+  LINE_HEIGHT_MULTIPLIER = 0.8,
   -- The width and height of texture.  **ALL** texture files MUST be
   -- these dimensions.
   -- Defaults: 64, 64
@@ -36,5 +36,5 @@ return {
   HUD_FONT_HEIGHT = 5,
   -- The field-of-view of any 3D renderers.
   -- Default: 66
-  FOV = 60
+  FOV = 66
 }

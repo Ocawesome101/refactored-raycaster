@@ -64,7 +64,6 @@ local function cast(x, state, render)
 
     pmX, pmY = mapX, mapY
     if not world.gettile(map, mapX, mapY) then
-      print("left map at", mapX, mapY)
       hit = 0
     elseif world.isdoor(map, mapX, mapY) then
       local doorState = world.doorstate(map, mapX, mapY)
@@ -96,7 +95,7 @@ local function cast(x, state, render)
         local rayMult = (mapY2 - posY) / rayDirY
         local rxe = posX + rayDirX * rayMult
         local trueStepX = math.sqrt(trueDeltaY*trueDeltaY-1)
-        local halfStepX = rxe + (stepX*trueStepX) * distSide
+        local halfStepX = rxe + (stepX*trueStepX) * distIn
         if math.floor(halfStepX) == mapX and halfStepX - mapX > distSide then
           hit = world.gettile(map, mapX, mapY)
           pmY = pmY + stepY * distIn
@@ -117,7 +116,7 @@ local function cast(x, state, render)
     if side == 0 then
       perpWallDist = (pmX - posX + (1 - stepX) / 2) / rayDirX
     else
-      perpWallDist = (pmX - posY + (1 - stepY) / 2) / rayDirY
+      perpWallDist = (pmY - posY + (1 - stepY) / 2) / rayDirY
     end
   end
 
