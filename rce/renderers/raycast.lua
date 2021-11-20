@@ -197,19 +197,19 @@ function lib.renderFrame(state, preblit)
 
     local invDet = 1 / (planeX * dirY - dirX * planeY)
 
-    local transformX = invDet * (dirY * spriteX - dirX * spriteY)
-    local transformY = invDet * (-planeY * spriteX - planeX * spriteY)
+    local transformX = invDet * (dirY * spriteX + dirX * spriteY)
+    local transformY = invDet * (-planeY * spriteX + planeX * spriteY)
 
     local spriteScreenX = math.floor((w / 2) * (1 + transformX / transformY))
 
     local spriteHeight = math.abs(math.floor(h / transformY
       * config.LINE_HEIGHT_MULTIPLIER))
-    local spriteWidth = spriteHeight
+    local spriteWidth = spriteHeight / config.LINE_HEIGHT_MULTIPLIER
 
     local drawStartY = math.max(0, -spriteHeight / 2 + h / 2)
     local drawEndY = math.min(h - 1, spriteHeight / 2 + h / 2)
 
-    local drawStartX = math.max(0, -spriteHeight / 2 + spriteScreenX)
+    local drawStartX = math.max(0, -spriteWidth / 2 + spriteScreenX)
     local drawEndX = math.min(w - 1, spriteWidth / 2 + spriteScreenX)
 
     local dof = h / 2 + spriteHeight / 2
@@ -219,15 +219,14 @@ function lib.renderFrame(state, preblit)
       local texX = math.floor((stripe - sof) * twdsw) % 64
 
       if transformY > 0 and stripe > 0 and stripe < w
-          and transformY > zBuffer[stripe] then
+          and transformY < zBuffer[stripe] then
         for y = math.ceil(drawStartY), drawEndY, 1 do
           local d = y - dof
           local texY = math.floor((d * config.TEXTURE_HEIGHT)/spriteHeight) % 64
-          local texidx = config.TEXTURE_WIDTH * texY-- + texX
+          local texidx = config.TEXTURE_WIDTH * texY + texX
           local color = textures.getdata(s[3])[texidx]
           --print(texidx, color)
           if color ~= 0 then
-            print(stripe, y, color)
             rdr.setPixel(stripe, y, color)
           end
         end

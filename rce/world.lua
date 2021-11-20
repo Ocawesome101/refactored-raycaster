@@ -61,7 +61,6 @@ function lib.load(state, file)
 
     if sprite then
       -- the minimum fields here are {mapX, mapY, texID}
-      print("ADD SPRITE " .. mapX .. "," .. mapY .. "," .. textures.getname(tile))
       w.sprites[#w.sprites+1] = {mapX + 0.5, mapY + 0.5, tile}
     else
       w.world[mapY][mapX] = tile
