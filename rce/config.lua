@@ -2,7 +2,7 @@ return {
   -- What the RGB values of a color are divided by during color
   -- comparison while loading textures.
   -- Default: 16
-  COLOR_MATCH_FACTOR = 16,
+  COLOR_MATCH_FACTOR = 1,
   -- Controls raycaster line height.  Can be useful for making things
   -- look more square.
   -- Default: 0.8
@@ -36,5 +36,8 @@ return {
   HUD_FONT_HEIGHT = 5,
   -- The field-of-view of any 3D renderers.
   -- Default: 66
-  FOV = 66
+  FOV = 66,
+  -- Animation duration in milliseconds.
+  -- Default: 1000
+  ANIMATION_DURATION = 5000
 }

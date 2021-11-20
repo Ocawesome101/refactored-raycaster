@@ -79,7 +79,7 @@ local drawables = {
   pistol = textures.todrawable(516, math.floor(config.HUD_SCALE / 2))
 }
 
-world.load(state, "maps/map1.map")
+world.load(state, worlds[1].map)
 
 local function forEachSprite(func, matches)
   for i, sprite in ipairs(state.world.sprites) do
@@ -132,6 +132,35 @@ while true do
   end
 
   local moveSpeed, rotSpeed = frametime * 0.007, frametime * 0.003
+
+  if input.pressed[input.keys.space] then
+    local dist, hit, mx, my = rce.renderer.cast(math.floor(state.width/2),state)
+    if dist < 2 and world.isdoor(state.world, mx, my) then
+      local dst = world.doorstate(state.world, mx, my)
+      dst[4] = true
+      dst[5] = dst[5] or time
+    end
+  end
+
+  for y, col in pairs(state.world.doors) do
+    for x, door in pairs(col) do
+      if door[4] then
+        if time - door[5] > config.ANIMATION_DURATION then
+          door[1] = math.max(0, door[1] - 0.1 * moveSpeed)
+          door[2] = math.max(door[3], door[2] - 0.1 * moveSpeed)
+          if time - door[5] > config.ANIMATION_DURATION + 2000 then
+            door[4] = false
+            door[5] = nil
+          end
+        else
+          door[1] = math.min(1, door[1] + 0.1 * moveSpeed)
+          door[2] = math.min(0.5, door[2] + 0.1 * moveSpeed)
+        end
+      end
+    end
+  end
+
+  -- this is below the spacebar check 
   if (input.pressed[input.keys.w] or input.pressed[input.keys.s]) and
      (input.pressed[input.keys.a] or input.pressed[input.keys.d]) then
     moveSpeed = moveSpeed * 0.8
@@ -154,7 +183,5 @@ while true do
   end
   if input.pressed[input.keys.right] then
     rce.turnPlayer(state, rce.TURN_RIGHT, rotSpeed)
-  end
-  if input.pressed[input.keys.space] then
   end
 end

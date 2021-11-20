@@ -54,14 +54,14 @@ function lib.load(state, file)
     if door then
       w.doors[mapY] = w.doors[mapY] or {}
       -- fields in this table:
-      -- distance sideways, distance inwards, motion sideways, motion inwards,
-      --  time of door open
+      -- distance sideways, distance inwards, min inward distance, is moving
       w.doors[mapY][mapX] = {0, textures.getname(tile) == "door" and 0.5 or 0,
-        0, 0, 0}
+        textures.getname(tile) == "door" and 0.5 or 0}
     end
 
     if sprite then
       -- the minimum fields here are {mapX, mapY, texID}
+      print("ADD SPRITE " .. mapX .. "," .. mapY .. "," .. textures.getname(tile))
       w.sprites[#w.sprites+1] = {mapX + 0.5, mapY + 0.5, tile}
     else
       w.world[mapY][mapX] = tile

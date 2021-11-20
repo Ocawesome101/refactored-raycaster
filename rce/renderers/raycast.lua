@@ -4,7 +4,7 @@ local expect = require("cc.expect").expect
 local config = require("rce.config")
 local textures = require("rce.texture")
 local world = require("rce.world")
-local rdr = require("rce.renderers.ccpc_term_buffered")
+local rdr
 
 local lib = {}
 
@@ -159,7 +159,7 @@ local function cast(x, state, render)
   return perpWallDist, hit, math.floor(mapX), math.floor(mapY)
 end
 
-lib.cast = castRay
+lib.cast = cast
 
 function lib.renderFrame(state, preblit)
   expect(1, state, "table")
@@ -216,16 +216,18 @@ function lib.renderFrame(state, preblit)
     local sof = -spriteWidth / 2 + spriteScreenX
     local twdsw = config.TEXTURE_WIDTH / spriteWidth
     for stripe = math.floor(drawStartX), drawEndX, 1 do
-      local texX = math.floor((stripe - sof) * twdsw)
+      local texX = math.floor((stripe - sof) * twdsw) % 64
 
       if transformY > 0 and stripe > 0 and stripe < w
           and transformY > zBuffer[stripe] then
         for y = math.ceil(drawStartY), drawEndY, 1 do
           local d = y - dof
           local texY = math.floor((d * config.TEXTURE_HEIGHT)/spriteHeight) % 64
-          local texidx = config.TEXTURE_WIDTH * texY
+          local texidx = config.TEXTURE_WIDTH * texY-- + texX
           local color = textures.getdata(s[3])[texidx]
-          if color ~= textures.isinpalette(0) then
+          --print(texidx, color)
+          if color ~= 0 then
+            print(stripe, y, color)
             rdr.setPixel(stripe, y, color)
           end
         end
@@ -238,8 +240,10 @@ function lib.renderFrame(state, preblit)
       local yoff, img = preblit[i][1], preblit[i][2]
       local w2 = math.floor(w / 2)
       for l=0, #img, 1 do
-        local y = h - i - yoff
-        rdr.setPixels(w2 - img[i][1], y, img[i][2])
+        if img[l] then
+          local y = h - i - yoff
+          rdr.setPixels(w2 - img[l][1], y, img[l][2])
+        end
       end
     end
   end
@@ -256,6 +260,7 @@ function lib.init(state)
   state.dirY = 1
   state.planeX = config.FOV/100
   state.planeY = 0
+  rdr = require("rce.renderers.ccpc_term_buffered")
   rdr.init(state)
   col_ceil = textures.addtopalette(0x383838)
   col_floor = textures.addtopalette(0x707070)

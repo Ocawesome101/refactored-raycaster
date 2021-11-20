@@ -43,4 +43,8 @@ function lib.coordstorect(x, y, rad)
   }
 end
 
+function lib.lerp(a, b, t, d)
+  return b + (b - a) * (math.min(t, d) / t)
+end
+
 return lib

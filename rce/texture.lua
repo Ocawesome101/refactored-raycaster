@@ -8,7 +8,7 @@ local lib = {}
 
 local textures = {}
 
-local palette = {}
+local palette = {[0] = 0, 0x707070, 0x383838, 0x003366, 0xffffff, 0xff0000}
 function lib.isinpalette(rgb)
   expect(1, rgb, "number")
   -- RGB of the provided color
@@ -33,7 +33,7 @@ function lib.isinpalette(rgb)
   end
 end
 
-local lastSetColor = 0
+local lastSetColor = #palette
 function lib.addtopalette(rgb)
   local idx = lib.isinpalette(rgb)
   if idx then return idx end
@@ -124,6 +124,12 @@ function lib.todrawable(id, scale)
   end
 
   return draw
+end
+
+function lib.init()
+  for i=0, #palette, 1 do
+    term.setPaletteColor(i, palette[i])
+  end
 end
 
 return lib

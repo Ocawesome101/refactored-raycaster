@@ -6,6 +6,7 @@ local hud = require("rce.hud")
 local input = require("rce.input")
 local world = require("rce.world")
 local physics = require("rce.physics")
+local textures = require("rce.texture")
 
 function lib.userenderer(id)
   lib.renderer = require("rce.renderers."..id)
@@ -18,6 +19,7 @@ function lib.newstate()
   local state = {}
   lib.renderer.init(state)
   hud.init(state)
+  textures.init()
   return state
 end
 
