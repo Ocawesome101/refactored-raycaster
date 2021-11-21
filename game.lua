@@ -66,7 +66,7 @@ textures.load(517, "gunfire")
 
 hud.addElement(2, 2, "HEALTH: " .. playerHealth, 1)
 hud.addElement(2, 8, "WEAPON: " .. weapon:upper(), 1)
-hud.addElement(128, 2, "AMMO: " .. ammo[weapons[weapon].ammo], 1)
+hud.addElement(128, 2, "AMMO: " .. ammo[weapons[weapon].ammo], 2)
 
 local drawables = {
   gunfire = textures.todrawable(517, config.HUD_SCALE),
