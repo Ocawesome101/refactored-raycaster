@@ -160,7 +160,7 @@ while true do
     end
   end
 
-  -- this is below the spacebar check 
+  -- this is below the spacebar check
   if (input.pressed[input.keys.w] or input.pressed[input.keys.s]) and
      (input.pressed[input.keys.a] or input.pressed[input.keys.d]) then
     moveSpeed = moveSpeed * 0.8
