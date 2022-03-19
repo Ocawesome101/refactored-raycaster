@@ -6,7 +6,7 @@ return {
   -- Controls raycaster line height.  Can be useful for making things
   -- look more square.
   -- Default: 0.8
-  LINE_HEIGHT_MULTIPLIER = 0.8,
+  LINE_HEIGHT_MULTIPLIER = 1.1,
   -- The width and height of texture.  **ALL** texture files MUST be
   -- these dimensions.
   -- Defaults: 64, 64

@@ -18,7 +18,8 @@ function lib.isinpalette(rgb)
   for i=0, #palette, 1 do
     if not palette[i] then break end
     -- RGB of this color in the palette
-    local palR, palG, palB = bit32.rshift(bit32.band(palette[i], 0xff0000), 16),
+   local palR, palG, palB =
+      bit32.rshift(bit32.band(palette[i], 0xff0000), 16),
       bit32.rshift(bit32.band(palette[i], 0x00ff00), 8),
       bit32.band(palette[i], 0x0000ff)
 
@@ -99,7 +100,7 @@ end
 function lib.todrawable(id, scale)
   expect(1, id, "number")
   expect(2, scale, "number")
-  
+
   if not textures[id] then return nil end
   local dat = textures[id].data
   local draw = {}

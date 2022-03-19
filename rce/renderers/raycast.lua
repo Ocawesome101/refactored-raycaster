@@ -10,14 +10,14 @@ local lib = {}
 
 local col_ceil
 local col_floor
-    
+
 local function cast(x, state, render)
   local posX, posY, dirX, dirY, planeX, planeY =
     state.posX, state.posY, state.dirX, state.dirY, state.planeX, state.planeY
   local map = state.world
-  local w = state.height
+  local w = state.width
   local h = state.height
-  
+
   local mapX, mapY = math.floor(posX), math.floor(posY)
   local cameraX = 2 * x / w - 1
   local rayDirX = dirX + planeX * cameraX
@@ -170,7 +170,7 @@ function lib.renderFrame(state, preblit)
   rdr.initNewFrame(1)
   local posX, posY, dirX, dirY, planeX, planeY =
     state.posX, state.posY, state.dirX, state.dirY, state.planeX, state.planeY
-  
+
   local zBuffer = {}
   for x = 0, w - 1, 1 do
     zBuffer[x] = cast(x, state, true)

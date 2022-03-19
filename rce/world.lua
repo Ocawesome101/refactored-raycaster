@@ -43,7 +43,7 @@ function lib.load(state, file)
 
     -- a tile cannot be both a door and a sprite
     if door and sprite then door, sprite = false, false end
-    
+
     if mapX >= mapWidth then
       mapY = mapY + 1
       mapX = 0
@@ -65,7 +65,7 @@ function lib.load(state, file)
     else
       w.world[mapY][mapX] = tile
     end
-    
+
     mapX = mapX + 1
   end
 
