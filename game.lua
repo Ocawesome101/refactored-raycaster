@@ -145,13 +145,17 @@ while true do
     end
   end
 
+  if input.pressed[input.keys.leftAlt] then
+    lastShot = time
+  end
+
   for y, col in pairs(state.world.doors) do
     for x, door in pairs(col) do
       if door[4] then
         if time - door[5] > doorOpenDuration + doorMoveDuration then
           door[1] = physics.lerp(1, 0, doorMoveDuration,
             time - door[5] - doorOpenDuration - doorMoveDuration)
-          door[2] = physics.lerp(door[3], 0.5, doorMoveDuration,
+          door[2] = physics.lerp(0.5, door[3], doorMoveDuration,
             time - door[5] - doorOpenDuration - doorMoveDuration)
           if time - door[5] > config.ANIMATION_DURATION + 2000 then
             door[4] = false
@@ -159,9 +163,8 @@ while true do
           end
         else
           door[1] = physics.lerp(0, 1, doorMoveDuration, time - door[5])
-          door[2] = physics.lerp(door[3], 0.5, doorMoveDuration, time - door[5])
-          door[1] = math.min(1, door[1] + 0.1 * moveSpeed)
-          door[2] = math.min(0.5, door[2] + 0.1 * moveSpeed)
+          door[2] = physics.lerp(door[3], 0.5,
+            doorMoveDuration, time - door[5])
         end
       end
     end
