@@ -36,8 +36,8 @@ return {
   HUD_FONT_HEIGHT = 5,
   -- The field-of-view of any 3D renderers.
   -- Default: 66
-  FOV = 66,
+  FOV = 80,
   -- Animation duration in milliseconds.
-  -- Default: 1000
-  ANIMATION_DURATION = 5000
+  -- Default: 4000
+  ANIMATION_DURATION = 4000
 }

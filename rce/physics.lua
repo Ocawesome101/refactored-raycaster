@@ -4,9 +4,10 @@ local config = require("rce.config")
 
 local lib = {}
 
--- rectangles are defined by four points
+-- rectangles are defined by four points.  we want to
+-- check if point P is inside rect R<P1,P2,P3,P4>, e.g.
 -- P1------P2
--- |        |
+-- |    P   |
 -- |        |
 -- P3------P4
 function lib.isinside(p, r)
@@ -43,8 +44,8 @@ function lib.coordstorect(x, y, rad)
   }
 end
 
-function lib.lerp(a, b, t, d)
-  return b + (b - a) * (math.min(t, d) / t)
+function lib.lerp(start, finish, time, elapsed)
+  return start + ((finish - start) * (math.min(time, elapsed) / time))
 end
 
 return lib

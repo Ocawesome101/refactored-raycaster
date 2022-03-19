@@ -89,6 +89,9 @@ local function forEachSprite(func, matches)
   end
 end
 
+local doorMoveDuration = math.floor(config.ANIMATION_DURATION / 4)
+local doorOpenDuration = math.floor(config.ANIMATION_DURATION / 2)
+
 local lastShot, nextShot = 0, 0
 while true do
   local time = os.epoch("utc")
@@ -145,14 +148,18 @@ while true do
   for y, col in pairs(state.world.doors) do
     for x, door in pairs(col) do
       if door[4] then
-        if time - door[5] > config.ANIMATION_DURATION then
-          door[1] = math.max(0, door[1] - 0.1 * moveSpeed)
-          door[2] = math.max(door[3], door[2] - 0.1 * moveSpeed)
+        if time - door[5] > doorOpenDuration + doorMoveDuration then
+          door[1] = physics.lerp(1, 0, doorMoveDuration,
+            time - door[5] - doorOpenDuration - doorMoveDuration)
+          door[2] = physics.lerp(door[3], 0.5, doorMoveDuration,
+            time - door[5] - doorOpenDuration - doorMoveDuration)
           if time - door[5] > config.ANIMATION_DURATION + 2000 then
             door[4] = false
             door[5] = nil
           end
         else
+          door[1] = physics.lerp(0, 1, doorMoveDuration, time - door[5])
+          door[2] = physics.lerp(door[3], 0.5, doorMoveDuration, time - door[5])
           door[1] = math.min(1, door[1] + 0.1 * moveSpeed)
           door[2] = math.min(0.5, door[2] + 0.1 * moveSpeed)
         end
